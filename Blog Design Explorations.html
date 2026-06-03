@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aperture — A publication of essays</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  html, body { margin:0; padding:0; min-height:100%; background:#f4efe4; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+  *, *::before, *::after { box-sizing: border-box; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+  ::selection { background: rgba(184,96,64,0.22); }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="aperture/ui.jsx"></script>
+<script type="text/babel" src="aperture/pages.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "palette": [
+    "#1b2845",
+    "#b86040",
+    "#f4efe4"
+  ],
+  "density": "regular",
+  "showAiBadges": true,
+  "heroStyle": "magazine"
+}/*EDITMODE-END*/;
+
+// Three professional palettes the user can swap between.
+const PALETTES = {
+  'Ink & Ivory':    { ink:'#1b2845', accent:'#b86040', bg:'#f4efe4', paper:'#fbf7ec', muted:'#6e655a', rule:'#d9cdb8', soft:'#ece4d2', accent2:'#5a7a6e' },
+  'Forest & Linen': { ink:'#1a3a2c', accent:'#b89252', bg:'#f1ede1', paper:'#f9f4e6', muted:'#6a6759', rule:'#d4cdb4', soft:'#e6e0cd', accent2:'#a85d52' },
+  'Slate & Bone':   { ink:'#2a2d34', accent:'#a85d52', bg:'#efeae0', paper:'#f6f1e7', muted:'#6a6964', rule:'#d2cbbb', soft:'#e3ddcd', accent2:'#506a6e' },
+};
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [page, setPage] = useState('home');
+  const [section, setSection] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Look up current palette object (palette tweak stores an array of swatches,
+  // matched by ink color to one of PALETTES above).
+  const paletteName = (
+    t.palette && t.palette[0] === '#1a3a2c' ? 'Forest & Linen' :
+    t.palette && t.palette[0] === '#2a2d34' ? 'Slate & Bone' :
+    'Ink & Ivory'
+  );
+  const C = PALETTES[paletteName];
+
+  // Inject palette CSS vars at root so every component can pull from var(--c-*)
+  useEffect(() => {
+    const r = document.documentElement;
+    Object.entries(C).forEach(([k,v]) => r.style.setProperty(`--c-${k}`, v));
+    document.body.style.background = C.bg;
+  }, [paletteName]);
+
+  // Scroll to top on page change
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [page]);
+
+  const ctx = { C, t, page, setPage, section, setSection, showModal, setShowModal, density: t.density, showAiBadges: t.showAiBadges, heroStyle: t.heroStyle };
+
+  return (
+    <div style={{ background:C.bg, minHeight:'100vh' }}>
+      <Nav ctx={ctx} />
+
+      {page === 'home'    && <HomePage    ctx={ctx} />}
+      {page === 'article' && <ArticlePage ctx={ctx} />}
+      {page === 'browse'  && <BrowsePage  ctx={ctx} />}
+      {page === 'author'  && <AuthorPage  ctx={ctx} />}
+      {page === 'search'  && <SearchPage  ctx={ctx} />}
+      {page === 'about'   && <AboutPage   ctx={ctx} />}
+
+      <Footer ctx={ctx} />
+
+      {showModal && <NewsletterModal ctx={ctx} onClose={() => setShowModal(false)} />}
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Color palette" />
+        <TweakColor
+          label="Palette"
+          value={t.palette}
+          options={[
+            ['#1b2845','#b86040','#f4efe4'],   // Ink & Ivory
+            ['#1a3a2c','#b89252','#f1ede1'],   // Forest & Linen
+            ['#2a2d34','#a85d52','#efeae0'],   // Slate & Bone
+          ]}
+          onChange={v => setTweak('palette', v)}
+        />
+        <TweakSection label="Layout" />
+        <TweakRadio
+          label="Density"
+          value={t.density}
+          options={['compact','regular','comfy']}
+          onChange={v => setTweak('density', v)}
+        />
+        <TweakRadio
+          label="Hero style"
+          value={t.heroStyle}
+          options={['magazine','single','list']}
+          onChange={v => setTweak('heroStyle', v)}
+        />
+        <TweakSection label="AI transparency" />
+        <TweakToggle
+          label="Show AI badges on bylines"
+          value={t.showAiBadges}
+          onChange={v => setTweak('showAiBadges', v)}
+        />
+        <TweakSection label="Navigate" />
+        <TweakButton onClick={() => setShowModal(true)}>Show newsletter modal</TweakButton>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

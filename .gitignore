@@ -1,0 +1,21 @@
+node_modules
+.env
+.env.local
+.env.*.local
+
+frontend/.next
+frontend/node_modules
+frontend/out
+frontend/.vercel
+
+backend/node_modules
+backend/.env
+backend/.env.local
+backend/dist
+backend/logs
+
+*.log
+
+# Secrets / credentials
+client_secret_*.json
+*.credentials.json
