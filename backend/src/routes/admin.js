@@ -59,7 +59,7 @@ async function resolveCategory(categoryValue) {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      if (data) return data;
     }
 
     const { data, error } = await supabase
@@ -69,10 +69,23 @@ async function resolveCategory(categoryValue) {
       .maybeSingle();
 
     if (error) throw error;
-    return data;
+    if (data) return data;
+
+    // Fallback if DB query succeeded but returned no rows
+    return demoCategories.find(
+      (category) =>
+        category.slug === normalizedValue ||
+        category.name.toLowerCase() === normalizedValue ||
+        category.id === rawValue
+    ) || null;
   } catch (error) {
     if (isSchemaMissingError(error)) {
-      return demoCategories.find((category) => category.slug === normalizedValue || category.name.toLowerCase() === normalizedValue) || null;
+      return demoCategories.find(
+        (category) =>
+          category.slug === normalizedValue ||
+          category.name.toLowerCase() === normalizedValue ||
+          category.id === rawValue
+      ) || null;
     }
 
     throw error;

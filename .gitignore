@@ -19,3 +19,7 @@ backend/logs
 # Secrets / credentials
 client_secret_*.json
 *.credentials.json
+
+# Uploads
+backend/uploads
+

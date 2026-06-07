@@ -119,8 +119,18 @@ export default function ProfilePage() {
                 <div className="space-y-2 font-serif text-lg text-muted">
                   <p><span className="font-semibold text-ink">Name:</span> {user.name}</p>
                   <p><span className="font-semibold text-ink">Email:</span> {user.email}</p>
-                  <p><span className="font-semibold text-ink">Role:</span> {user.role}</p>
+                  <p><span className="font-semibold text-ink">Role:</span> <span className="capitalize">{user.role}</span></p>
                 </div>
+                {user.role === 'admin' && (
+                  <div className="mt-6 flex flex-wrap gap-4">
+                    <Link
+                      href="/admin"
+                      className="inline-flex items-center gap-2 rounded-full border border-accent bg-accent px-6 py-3 text-sm font-medium text-paper transition hover:-translate-y-0.5 hover:opacity-95 shadow-[0_10px_24px_rgba(184,96,64,0.18)]"
+                    >
+                      Go to Admin Dashboard ↗
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           ) : null}

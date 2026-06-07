@@ -8,6 +8,7 @@ import { useAuth } from '../../context/auth-context';
 const navigation = [
   { label: 'Overview', href: '/admin' },
   { label: 'All Blogs', href: '/admin/blogs' },
+  { label: 'Add Blog', href: '/admin/blogs/create' },
   { label: 'Generate Blog', href: '/admin/generate-blog' },
   { label: 'Categories', href: '/admin/categories' },
 ];
