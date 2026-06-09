@@ -45,20 +45,44 @@ async function createUserFromGoogleProfile(profile) {
   const email = getGoogleEmail(profile);
   const name = getGoogleName(profile);
   const avatarUrl = getGoogleAvatar(profile);
+
+  // First check if user already exists by email
+  const { data: existing } = await supabase
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (existing) {
+    // Update google_id, name, avatar if needed, but leave role alone (promoteAdminIfNeeded handles it)
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        google_id: googleId,
+        name: name || existing.name,
+        avatar_url: avatarUrl || existing.avatar_url,
+      })
+      .eq('id', existing.id)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  // New user — assign admin role if email matches ADMIN_EMAIL
   const normalizedAdminEmail = normalizeEmail(env.adminEmail);
+  const role = normalizedAdminEmail && normalizeEmail(email) === normalizedAdminEmail ? 'admin' : 'user';
 
   const { data, error } = await supabase
     .from('users')
-    .upsert(
-      {
-        google_id: googleId,
-        email,
-        name,
-        avatar_url: avatarUrl,
-        role: normalizedAdminEmail && normalizeEmail(email) === normalizedAdminEmail ? 'admin' : 'user',
-      },
-      { onConflict: 'email' },
-    )
+    .insert({
+      google_id: googleId,
+      email,
+      name,
+      avatar_url: avatarUrl,
+      role,
+    })
     .select('*')
     .single();
 

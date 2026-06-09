@@ -29,9 +29,29 @@ export function AuthButton() {
         onClick={() => {
           window.location.href = loginHref;
         }}
-        className="inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:border-accent hover:bg-accent"
+        className="inline-flex items-center gap-3 rounded-full border border-rule bg-paper px-3 py-2 text-sm font-medium text-ink transition hover:border-accent"
       >
-        Continue with Google
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-soft">
+          <svg className="h-4 w-4" viewBox="0 0 24 24">
+            <path
+              fill="#EA4335"
+              d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.336 0 3.327 2.673 1.345 6.573L5.266 9.765z"
+            />
+            <path
+              fill="#34A853"
+              d="M16.04 15.345c-1.073.71-2.437 1.127-4.04 1.127a7.077 7.077 0 0 1-6.734-4.855L1.345 14.81c1.982 3.9 5.991 6.573 10.655 6.573 2.927 0 5.618-.982 7.645-2.682l-3.609-3.355z"
+            />
+            <path
+              fill="#4285F4"
+              d="M23.49 12.273c0-.818-.082-1.609-.218-2.382H12v4.518h6.464a5.536 5.536 0 0 1-2.418 3.636l3.609 3.355c2.109-1.945 3.836-4.8 3.836-9.127z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.266 14.235A7.01 7.01 0 0 1 4.909 12c0-.79.127-1.555.357-2.264L1.345 6.573A11.934 11.934 0 0 0 0 12c0 1.927.455 3.755 1.345 5.427l3.921-3.192z"
+            />
+          </svg>
+        </span>
+        <span>Continue with Google</span>
       </button>
     );
   }

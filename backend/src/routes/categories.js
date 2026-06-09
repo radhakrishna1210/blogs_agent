@@ -23,6 +23,14 @@ categoriesRouter.get('/', async (_req, res, next) => {
       throw error;
     }
 
+    if (!data || data.length === 0) {
+      return res.json({
+        ok: true,
+        count: demoCategories.length,
+        categories: demoCategories,
+      });
+    }
+
     return res.json({
       ok: true,
       count: data.length,

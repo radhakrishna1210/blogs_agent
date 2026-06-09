@@ -6,6 +6,7 @@ import {
   demoCategories,
   getDemoBlogBySlug,
   getDemoCategoryBySlug,
+  getDemoCategoryById,
   isSchemaMissingError,
   listDemoBlogs,
 } from '../data/demoContent.js';
@@ -51,7 +52,11 @@ async function resolveCategoryId(categoryValue) {
     return null;
   }
 
-  // If rawValue looks like a UUID, search by id; otherwise search by slug.
+  // Handle demo category IDs (e.g. category-1)
+  if (rawValue.startsWith('category-')) {
+    return getDemoCategoryById(rawValue);
+  }
+
   const looksLikeUuid = /^[0-9a-fA-F-]{36}$/.test(rawValue);
 
   try {
@@ -63,7 +68,7 @@ async function resolveCategoryId(categoryValue) {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      if (data) return data;
     }
 
     const slug = rawValue.toLowerCase();
@@ -74,10 +79,13 @@ async function resolveCategoryId(categoryValue) {
       .maybeSingle();
 
     if (error) throw error;
-    return data;
+    if (data) return data;
+
+    // Fallback if DB query succeeded but returned no rows
+    return getDemoCategoryBySlug(slug) || getDemoCategoryById(slug);
   } catch (error) {
     if (isSchemaMissingError(error)) {
-      return getDemoCategoryBySlug(rawValue.toLowerCase());
+      return getDemoCategoryBySlug(rawValue.toLowerCase()) || getDemoCategoryById(rawValue);
     }
 
     throw error;
