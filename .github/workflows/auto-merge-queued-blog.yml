@@ -44,14 +44,7 @@ jobs:
               return;
             }
 
-            // Approve and merge
-            await github.rest.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-              event: 'APPROVE',
-            });
-
+            // Merge directly (no self-approval — GitHub Actions can't approve its own PRs)
             await github.rest.pulls.merge({
               owner: context.repo.owner,
               repo: context.repo.repo,
