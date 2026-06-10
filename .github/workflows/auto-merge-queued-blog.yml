@@ -1,0 +1,62 @@
+name: Auto-merge Queued Blog PR
+
+on:
+  pull_request:
+    paths:
+      - 'queued-blog.json'
+    branches:
+      - main
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Auto-merge PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Only auto-merge if the branch is from Claude routine
+            if (!pr.head.ref.startsWith('claude/')) {
+              console.log('Not a Claude branch, skipping auto-merge.');
+              return;
+            }
+
+            // Check only queued-blog.json is changed
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+
+            const changedFiles = files.data.map(f => f.filename);
+            console.log('Changed files:', changedFiles);
+
+            const onlyQueuedBlog = changedFiles.every(f => f === 'queued-blog.json');
+            if (!onlyQueuedBlog) {
+              console.log('PR changes more than queued-blog.json, skipping auto-merge.');
+              return;
+            }
+
+            // Approve and merge
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              event: 'APPROVE',
+            });
+
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: 'squash',
+            });
+
+            console.log('✅ PR auto-merged successfully.');
