@@ -7,7 +7,8 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   jwtSecret: process.env.JWT_SECRET || '',
   groqApiKey: process.env.GROQ_API_KEY || process.env.ANTHROPIC_API_KEY || '',
-  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  groqModel: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
   adminEmail: process.env.ADMIN_EMAIL || '',
   supabaseUrl: process.env.SUPABASE_URL || '',
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
@@ -16,4 +17,5 @@ export const env = {
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
   googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:4000/auth/google/callback',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  cronSecret: process.env.CRON_SECRET || '',
 };

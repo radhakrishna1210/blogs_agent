@@ -114,17 +114,24 @@ export default function AdminOverviewPage() {
         <div className="mt-6 space-y-4">
           {!loading && data?.recentBlogs.length ? (
             data.recentBlogs.map((blog: AdminBlog) => (
-              <article key={blog.id} className="grid gap-4 rounded-[24px] border border-rule bg-bg p-5 md:grid-cols-[1fr_auto] md:items-center">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h3 className="font-serif text-xl text-ink">{blog.title}</h3>
-                    <BlogStatus status={blog.status} />
+              <article key={blog.id} className="rounded-[24px] border border-rule bg-bg p-6 shadow-sm transition hover:shadow-md">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="space-y-2 max-w-xl">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h3 className="font-serif text-xl font-medium text-ink leading-snug">{blog.title}</h3>
+                      <BlogStatus status={blog.status} />
+                    </div>
+                    <p className="text-sm leading-relaxed text-ink/80">{blog.summary || 'No summary available yet.'}</p>
                   </div>
-                  <p className="mt-2 text-sm text-muted">
-                    {blog.category?.name || 'Uncategorized'} · {formatDate(blog.created_at)} · {blog.likes_count} likes
-                  </p>
+                  <div className="text-left md:text-right flex-shrink-0 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+                      {blog.category?.name || 'Uncategorized'}
+                    </p>
+                    <p className="mt-1 text-xs text-muted">
+                      {formatDate(blog.created_at)} · {blog.likes_count} likes
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-muted">{blog.summary || 'No summary available yet.'}</p>
               </article>
             ))
           ) : (
