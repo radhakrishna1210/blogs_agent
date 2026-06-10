@@ -1,0 +1,37 @@
+name: Daily Blog Publisher
+
+on:
+  schedule:
+    - cron: '30 2 * * *'  # 8:00 AM IST (UTC+5:30)
+  workflow_dispatch:       # allows manual trigger from GitHub Actions tab
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish blog post
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.BACKEND_URL }}/api/admin/auto-publish" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+
+          echo "Response: $BODY"
+          echo "HTTP Status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Publish failed with status $HTTP_CODE"
+            exit 1
+          fi
+
+          OK=$(echo "$BODY" | grep -o '"ok":true')
+          if [ -z "$OK" ]; then
+            echo "❌ Publish failed: $BODY"
+            exit 1
+          fi
+
+          TITLE=$(echo "$BODY" | grep -o '"title":"[^"]*"' | cut -d'"' -f4)
+          SLUG=$(echo "$BODY" | grep -o '"slug":"[^"]*"' | cut -d'"' -f4)
+          echo "✅ Published: $TITLE (slug: $SLUG)"
