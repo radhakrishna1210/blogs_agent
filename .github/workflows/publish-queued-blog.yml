@@ -1,0 +1,59 @@
+name: Publish Queued Blog
+
+on:
+  push:
+    paths:
+      - 'queued-blog.json'
+    branches:
+      - radhakrishna_render_deployment
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Read queued blog
+        id: read
+        run: |
+          if [ ! -f queued-blog.json ]; then
+            echo "No queued-blog.json found, skipping."
+            exit 0
+          fi
+          echo "content=$(cat queued-blog.json | tr -d '\n')" >> $GITHUB_OUTPUT
+
+      - name: Publish to backend
+        if: steps.read.outputs.content != ''
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.BACKEND_URL }}/api/admin/auto-publish" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -d '${{ steps.read.outputs.content }}')
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+
+          echo "Response: $BODY"
+          echo "HTTP Status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Publish failed with status $HTTP_CODE"
+            exit 1
+          fi
+
+          TITLE=$(echo "$BODY" | grep -o '"title":"[^"]*"' | cut -d'"' -f4)
+          SLUG=$(echo "$BODY" | grep -o '"slug":"[^"]*"' | cut -d'"' -f4)
+          echo "✅ Published: $TITLE (slug: $SLUG)"
+
+      - name: Delete queued-blog.json
+        if: steps.read.outputs.content != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git rm queued-blog.json
+          git commit -m "chore: remove published queued-blog.json"
+          git push
