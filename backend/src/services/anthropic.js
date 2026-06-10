@@ -1,7 +1,7 @@
 import { env } from '../config/env.js';
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const DEFAULT_MODEL = env.groqModel || 'llama-3.3-70b-versatile';
+const DEFAULT_MODEL = env.groqModel || 'llama-3.1-8b-instant';
 
 function ensureGroqConfigured() {
   if (!env.groqApiKey) {
@@ -35,7 +35,7 @@ function parseJsonResponse(text) {
   }
 }
 
-async function callGroq({ system, prompt, model = DEFAULT_MODEL, maxTokens = 4000 }) {
+async function callGroq({ system, prompt, model = DEFAULT_MODEL, maxTokens = 2048 }) {
   ensureGroqConfigured();
 
   const response = await fetch(GROQ_ENDPOINT, {

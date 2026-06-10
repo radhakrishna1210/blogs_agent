@@ -6,6 +6,7 @@ import { healthRouter } from './health.js';
 import { meRouter } from './me.js';
 import { topicsRouter } from './topics.js';
 import { uploadRouter } from './upload.js';
+import { subscribersRouter } from './subscribers.js';
 
 export const apiRouter = Router();
 
@@ -16,3 +17,4 @@ apiRouter.use('/me', meRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/topics', topicsRouter);
 apiRouter.use('/upload', uploadRouter);
+apiRouter.use('/subscribers', subscribersRouter);

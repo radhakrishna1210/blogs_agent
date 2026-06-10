@@ -77,3 +77,13 @@ execute function public.set_updated_at();
 
 -- Optional counters are managed in application code.
 -- Add your RLS policies after confirming the auth flow.
+
+-- Subscribers
+create table if not exists public.subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create index if not exists idx_subscribers_email on public.subscribers(email);
+
