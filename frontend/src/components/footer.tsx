@@ -24,11 +24,11 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-muted">Connect</p>
-          <div className="mt-4 grid gap-2 text-sm text-ink">
-            <span>Backend: Express API</span>
-            <span>Frontend: Next.js + Tailwind</span>
-            <span>Palette: ink, accent, bg</span>
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-muted">Explore</p>
+          <div className="mt-4 grid gap-2 text-sm">
+            <Link href="/blogs" className="text-ink hover:text-accent">All Articles</Link>
+            <Link href="#topics" className="text-ink hover:text-accent">Browse Topics</Link>
+            <Link href="/admin" className="text-ink hover:text-accent">Admin</Link>
           </div>
         </div>
       </div>
