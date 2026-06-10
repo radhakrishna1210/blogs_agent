@@ -329,52 +329,79 @@ adminRouter.post('/auto-publish', async (req, res, next) => {
       return next(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
     }
 
-    let topic = req.body?.topic || req.body?.prompt;
-    let categoryName = req.body?.category;
+    const {
+      title: prewrittenTitle,
+      content: prewrittenContent,
+      summary: prewrittenSummary,
+      cover_image_url: prewrittenCoverUrl,
+      category: categoryInput,
+      topic,
+      prompt,
+    } = req.body || {};
 
-    if (!topic) {
-      const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-      topic = `Write an engaging blog post about ${randomTopic.title}. Focus on: ${randomTopic.summary}`;
+    let title, content, summary, coverImageUrl, categoryName;
+
+    // --- PATH A: Claude wrote the blog (title + content provided directly) ---
+    if (prewrittenTitle && prewrittenContent) {
+      title = String(prewrittenTitle).trim();
+      content = String(prewrittenContent).trim();
+      summary = prewrittenSummary ? String(prewrittenSummary).trim() : '';
+      coverImageUrl = prewrittenCoverUrl ? String(prewrittenCoverUrl).trim() : null;
+      categoryName = categoryInput || topics[Math.floor(Math.random() * topics.length)].title;
+      console.log('[auto-publish] Claude-written path — skipping Groq and Gemini.');
+
+    // --- PATH B: Groq + Gemini generation (manual trigger or legacy) ---
+    } else {
+      let topicPrompt = topic || prompt;
+      categoryName = categoryInput;
+
+      if (!topicPrompt) {
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+        topicPrompt = `Write an engaging blog post about ${randomTopic.title}. Focus on: ${randomTopic.summary}`;
+        if (!categoryName) categoryName = randomTopic.title;
+      }
+
       if (!categoryName) {
-        categoryName = randomTopic.title;
+        categoryName = topics[Math.floor(Math.random() * topics.length)].title;
+      }
+
+      const categoryRecord = await resolveCategory(categoryName);
+      if (!categoryRecord) {
+        return next(createHttpError(400, 'Category not found.', 'CATEGORY_NOT_FOUND'));
+      }
+
+      const generated = await generateGroqBlog({
+        prompt: String(topicPrompt).trim(),
+        categoryName: categoryRecord.name,
+      });
+
+      title = generated.humanized?.title || generated.draft?.title || '';
+      content = generated.humanized?.content || generated.draft?.content || '';
+      summary = generated.humanized?.summary || generated.draft?.summary || '';
+      categoryName = categoryRecord.name;
+
+      const imageDescription =
+        generated.humanized?.suggested_cover_image_description ||
+        generated.draft?.suggested_cover_image_description ||
+        `A visually striking, editorial-quality cover image for a blog article titled "${title}".`;
+
+      coverImageUrl = null;
+      try {
+        coverImageUrl = await generateBlogCoverImage({
+          description: imageDescription,
+          blogTitle: title,
+          categoryName: categoryRecord.name,
+        });
+      } catch (imageError) {
+        console.error('Auto-publish cover image generation failed:', imageError.message);
       }
     }
 
-    if (!categoryName) {
-      const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-      categoryName = randomTopic.title;
-    }
-
-    const categoryRecord = await resolveCategory(categoryName);
-    if (!categoryRecord) {
+    // Resolve final category record for DB insert (both paths need this)
+    const resolvedCategory = await resolveCategory(categoryName);
+    if (!resolvedCategory) {
       return next(createHttpError(400, 'Category not found.', 'CATEGORY_NOT_FOUND'));
     }
-
-    const generated = await generateGroqBlog({
-      prompt: String(topic).trim(),
-      categoryName: categoryRecord.name,
-    });
-
-    const blogTitle = generated.humanized?.title || generated.draft?.title || '';
-    const imageDescription =
-      generated.humanized?.suggested_cover_image_description ||
-      generated.draft?.suggested_cover_image_description ||
-      `A visually striking, editorial-quality cover image for a blog article titled "${blogTitle}".`;
-
-    let coverImageUrl = null;
-    try {
-      coverImageUrl = await generateBlogCoverImage({
-        description: imageDescription,
-        blogTitle,
-        categoryName: categoryRecord.name,
-      });
-    } catch (imageError) {
-      console.error('Auto-publish cover image generation failed:', imageError.message);
-    }
-
-    const title = blogTitle;
-    const content = generated.humanized?.content || generated.draft?.content || '';
-    const summary = generated.humanized?.summary || generated.draft?.summary || '';
 
     // Check database state or if schema is missing
     let finalCategory = null;
@@ -384,7 +411,7 @@ adminRouter.post('/auto-publish', async (req, res, next) => {
     try {
       const { data: dbCategories } = await supabase.from('categories').select('*');
       if (dbCategories && dbCategories.length > 0) {
-        const targetName = categoryRecord.name.toLowerCase();
+        const targetName = resolvedCategory.name.toLowerCase();
         finalCategory = dbCategories.find(c => c.name.toLowerCase() === targetName || c.slug.toLowerCase() === targetName);
         if (!finalCategory) {
           finalCategory = dbCategories[0];
@@ -394,10 +421,10 @@ adminRouter.post('/auto-publish', async (req, res, next) => {
         const { data: newCat } = await supabase
           .from('categories')
           .insert({
-            name: categoryRecord.name,
-            slug: categoryRecord.slug,
-            icon: categoryRecord.icon,
-            description: categoryRecord.description
+            name: resolvedCategory.name,
+            slug: resolvedCategory.slug,
+            icon: resolvedCategory.icon,
+            description: resolvedCategory.description
           })
           .select('*')
           .single();
@@ -405,14 +432,14 @@ adminRouter.post('/auto-publish', async (req, res, next) => {
           finalCategory = newCat;
         } else {
           isDemoMode = true;
-          finalCategory = categoryRecord;
+          finalCategory = resolvedCategory;
         }
       }
     } catch (err) {
       if (isSchemaMissingError(err)) {
         isDemoMode = true;
       }
-      finalCategory = categoryRecord;
+      finalCategory = resolvedCategory;
     }
 
     if (!isDemoMode) {
