@@ -116,6 +116,7 @@ export default function AdminGenerateBlogPage() {
           content: editableContent.trim(),
           category,
           summary: result.blog.summary,
+          cover_image_url: result.blog.cover_image_url || null,
           ai_generated: true,
         },
       });
@@ -280,10 +281,28 @@ export default function AdminGenerateBlogPage() {
               </div>
 
               <div className="rounded-[20px] border border-rule bg-bg p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Cover image idea</p>
-                <p className="mt-2 text-sm leading-6 text-muted">
-                  {result.blog.suggested_cover_image_description || 'No cover suggestion was returned.'}
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Cover image</p>
+                {result.blog.cover_image_url ? (
+                  <div className="mt-3 space-y-2">
+                    <div className="overflow-hidden rounded-2xl border border-rule">
+                      <img
+                        src={result.blog.cover_image_url}
+                        alt={result.blog.suggested_cover_image_description || 'AI-generated cover image'}
+                        className="h-auto w-full object-cover"
+                        style={{ maxHeight: '240px' }}
+                      />
+                    </div>
+                    {result.blog.suggested_cover_image_description ? (
+                      <p className="text-xs leading-5 text-muted italic">
+                        {result.blog.suggested_cover_image_description}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm leading-6 text-muted">
+                    {result.blog.suggested_cover_image_description || 'No cover image was generated.'}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">

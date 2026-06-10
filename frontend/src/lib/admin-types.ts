@@ -62,6 +62,7 @@ export type AdminGeneratedBlog = {
   summary: string;
   content: string;
   suggested_cover_image_description?: string;
+  cover_image_url?: string;
 };
 
 export type AdminGenerateBlogResponse = {
