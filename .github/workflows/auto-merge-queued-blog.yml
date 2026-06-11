@@ -1,4 +1,4 @@
-name: Auto-merge Queued Blog PR
+name: Auto-merge and Publish Queued Blog PR
 
 on:
   pull_request:
@@ -8,48 +8,77 @@ on:
       - main
 
 jobs:
-  auto-merge:
+  merge-and-publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
 
     steps:
-      - name: Auto-merge PR
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Verify only queued-blog.json changed
+        id: verify
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
-
-            // Only auto-merge if the branch is from Claude routine
             if (!pr.head.ref.startsWith('claude/')) {
-              console.log('Not a Claude branch, skipping auto-merge.');
+              console.log('Not a Claude branch, skipping.');
+              core.setOutput('skip', 'true');
               return;
             }
-
-            // Check only queued-blog.json is changed
             const files = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr.number,
             });
-
-            const changedFiles = files.data.map(f => f.filename);
-            console.log('Changed files:', changedFiles);
-
-            const onlyQueuedBlog = changedFiles.every(f => f === 'queued-blog.json');
-            if (!onlyQueuedBlog) {
-              console.log('PR changes more than queued-blog.json, skipping auto-merge.');
+            const changed = files.data.map(f => f.filename);
+            console.log('Changed files:', changed);
+            if (!changed.every(f => f === 'queued-blog.json')) {
+              console.log('PR changes more than queued-blog.json, skipping.');
+              core.setOutput('skip', 'true');
               return;
             }
+            core.setOutput('skip', 'false');
 
-            // Merge directly (no self-approval — GitHub Actions can't approve its own PRs)
+      - name: Publish to backend
+        if: steps.verify.outputs.skip == 'false'
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.BACKEND_URL }}/api/admin/auto-publish" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            --data @queued-blog.json)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+
+          echo "Response: $BODY"
+          echo "HTTP Status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Publish failed with status $HTTP_CODE"
+            exit 1
+          fi
+
+          TITLE=$(echo "$BODY" | grep -o '"title":"[^"]*"' | cut -d'"' -f4)
+          SLUG=$(echo "$BODY" | grep -o '"slug":"[^"]*"' | cut -d'"' -f4)
+          echo "✅ Published: $TITLE (slug: $SLUG)"
+
+      - name: Merge PR
+        if: steps.verify.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
             await github.rest.pulls.merge({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: pr.number,
+              pull_number: context.payload.pull_request.number,
               merge_method: 'squash',
             });
-
-            console.log('✅ PR auto-merged successfully.');
+            console.log('✅ PR merged.');
