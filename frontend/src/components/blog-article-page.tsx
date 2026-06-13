@@ -128,20 +128,20 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
 
   return (
     <main className="min-h-screen bg-bg text-ink">
-      <article className="mx-auto max-w-4xl px-6 py-10 lg:px-8 lg:py-14">
+      <article className="mx-auto max-w-4xl px-4 py-6 sm:px-6 md:px-8 md:py-14">
         <div className="overflow-hidden rounded-[32px] border border-rule bg-paper shadow-[0_20px_70px_rgba(27,40,69,0.08)]">
-          <div className="aspect-[16/8] bg-soft">
+          <div className="aspect-[16/10] sm:aspect-[16/9] md:aspect-[16/8] bg-soft relative overflow-hidden">
             {blog.cover_image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={blog.cover_image_url} alt={blog.title} className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,rgba(184,96,64,0.9),rgba(90,122,110,0.84))]">
-                <span className="font-display text-6xl text-paper/90">Aperture</span>
+                <span className="font-display text-4xl sm:text-6xl text-paper/90">Aperture</span>
               </div>
             )}
           </div>
 
-          <div className="px-6 py-8 md:px-10 md:py-10">
+          <div className="px-4 py-6 sm:px-8 md:px-10 md:py-10">
             <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
               {blog.category ? (
                 <Link
@@ -156,11 +156,11 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
               <span>{blog.read_time || 1} min read</span>
             </div>
 
-            <h1 className="mt-5 max-w-3xl font-display text-5xl font-normal tracking-[-0.04em] text-ink md:text-7xl">
+            <h1 className="mt-5 max-w-3xl font-display text-3xl sm:text-5xl md:text-7xl font-normal tracking-[-0.04em] text-ink leading-tight">
               {blog.title}
             </h1>
 
-            <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-rule pt-6">
+            <div className="mt-6 flex flex-col gap-4 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-rule bg-soft text-sm font-semibold text-ink">
                   {blog.author?.avatar_url ? (
@@ -176,7 +176,7 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
                 </div>
               </div>
 
-              <div className="ml-auto flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => void handleLike()}
@@ -202,9 +202,9 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
               </div>
             </div>
 
-            <div className="mt-8 rounded-[28px] border border-rule bg-bg p-6 md:p-8">
+            <div className="mt-8 rounded-[20px] sm:rounded-[28px] border border-rule bg-bg p-4 sm:p-6 md:p-8">
               <div
-                className="prose prose-slate max-w-none prose-headings:font-display prose-headings:font-normal prose-headings:tracking-[-0.03em] prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:font-serif prose-p:text-[17px] prose-p:leading-8 prose-li:font-serif prose-li:text-[17px] prose-a:text-accent prose-img:rounded-[20px] prose-blockquote:border-accent prose-blockquote:font-serif prose-blockquote:not-italic"
+                className="prose prose-slate max-w-none prose-headings:font-display prose-headings:font-normal prose-headings:tracking-[-0.03em] prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:font-serif prose-p:text-[16px] sm:prose-p:text-[17px] prose-p:leading-8 prose-li:font-serif prose-li:text-[16px] sm:prose-li:text-[17px] prose-a:text-accent prose-img:rounded-[20px] prose-blockquote:border-accent prose-blockquote:font-serif prose-blockquote:not-italic"
                 dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
               />
             </div>

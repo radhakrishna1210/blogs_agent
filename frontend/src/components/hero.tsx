@@ -3,15 +3,15 @@ import Link from 'next/link';
 export function Hero() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
-      <div className="grid gap-10 overflow-hidden rounded-[28px] border border-rule bg-paper p-8 shadow-[0_20px_80px_rgba(27,40,69,0.08)] lg:grid-cols-[1.4fr_0.9fr] lg:p-12">
+      <div className="grid gap-10 overflow-hidden rounded-[28px] border border-rule bg-paper p-5 shadow-[0_20px_80px_rgba(27,40,69,0.08)] sm:p-8 lg:grid-cols-[1.4fr_0.9fr] lg:p-12">
         <div>
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.22em] text-accent">
             A publication of essays
           </p>
-          <h1 className="mt-4 max-w-3xl font-display text-5xl font-normal tracking-[-0.035em] text-ink md:text-7xl">
+          <h1 className="mt-4 max-w-3xl font-display text-3xl font-normal tracking-[-0.035em] text-ink sm:text-5xl md:text-7xl">
             Ideas worth reading, published daily.
           </h1>
-          <p className="mt-6 max-w-2xl font-serif text-lg leading-8 text-muted md:text-xl">
+          <p className="mt-6 max-w-2xl font-serif text-base leading-7 text-muted sm:text-lg md:text-xl md:leading-8">
             Aperture covers AI, personal finance, health, design, and the future of work — with fresh articles every morning written for curious minds.
           </p>
 
@@ -25,12 +25,12 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between rounded-[24px] border border-rule bg-bg p-6">
+        <div className="flex flex-col justify-between rounded-[24px] border border-rule bg-bg p-5 sm:p-6">
           <div>
             <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent2">
               What we cover
             </p>
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               {[
                 ['AI & Tech', 'Tools & automation'],
                 ['Finance', 'Money that works'],
@@ -45,9 +45,9 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl bg-ink p-5 text-paper">
+          <div className="mt-6 rounded-2xl bg-ink p-4 sm:p-5 text-paper">
             <div className="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-paper/60">Published daily</div>
-            <p className="mt-2 font-serif text-lg leading-7 text-paper/90">
+            <p className="mt-2 font-serif text-base sm:text-lg leading-7 text-paper/90">
               New articles every morning across all categories — no filler, no fluff.
             </p>
           </div>
