@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Contact — Aperture',
-  description: 'Get in touch with the Aperture team. We'd love to hear from you.',
+  description: "Get in touch with the Aperture team. We'd love to hear from you.",
 };
 
 export default function ContactPage() {
