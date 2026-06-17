@@ -28,6 +28,8 @@ export function Footer() {
           <div className="mt-4 grid gap-2 text-sm">
             <Link href="/blogs" className="text-ink hover:text-accent">All Articles</Link>
             <Link href="#topics" className="text-ink hover:text-accent">Browse Topics</Link>
+            <Link href="/contact" className="text-ink hover:text-accent">Contact</Link>
+            <Link href="/privacy-policy" className="text-ink hover:text-accent">Privacy Policy</Link>
             <Link href="/admin" className="text-ink hover:text-accent">Admin</Link>
           </div>
         </div>
