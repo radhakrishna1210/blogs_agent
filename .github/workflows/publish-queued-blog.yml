@@ -51,6 +51,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase
           git rm queued-blog.json
           git commit -m "chore: remove published queued-blog.json"
           git push
