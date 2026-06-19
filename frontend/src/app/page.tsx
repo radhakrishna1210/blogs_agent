@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Footer } from '../components/footer';
 import { Hero } from '../components/hero';
 import { Navbar } from '../components/navbar';
@@ -7,6 +8,18 @@ import { topics } from '../lib/topics';
 import { apiRequest } from '../lib/api';
 import type { PublicBlog } from '../lib/blog-types';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Aperture — Editorial blog on AI, Finance, Productivity & More',
+  description: 'Aperture publishes original essays on AI, personal finance, productivity, health, startups, and the future of the web.',
+  alternates: { canonical: 'https://blogs.mannmate.com' },
+  openGraph: {
+    title: 'Aperture — Editorial blog on AI, Finance, Productivity & More',
+    description: 'Aperture publishes original essays on AI, personal finance, productivity, health, startups, and the future of the web.',
+    url: 'https://blogs.mannmate.com',
+    type: 'website',
+  },
+};
 
 async function getLatestBlogs(): Promise<PublicBlog[]> {
   try {

@@ -10,6 +10,7 @@ type PublicBlogBrowserProps = {
   mode: 'all' | 'category';
   categorySlug?: string;
   categoryLabel?: string;
+  initialBlogs?: PublicBlog[];
 };
 
 function buildQueryPath(params: { category?: string; search?: string; page?: number; limit?: number }) {
@@ -50,14 +51,14 @@ async function loadAllBlogs(filters: { category?: string; search?: string }) {
   return blogs;
 }
 
-export function PublicBlogBrowser({ mode, categorySlug, categoryLabel }: PublicBlogBrowserProps) {
+export function PublicBlogBrowser({ mode, categorySlug, categoryLabel, initialBlogs }: PublicBlogBrowserProps) {
   const [categories, setCategories] = useState<PublicBlogCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>(categorySlug || 'all');
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [blogs, setBlogs] = useState<PublicBlog[]>([]);
+  const [blogs, setBlogs] = useState<PublicBlog[]>(initialBlogs || []);
   const [loadingCategories, setLoadingCategories] = useState(mode === 'all');
-  const [loadingBlogs, setLoadingBlogs] = useState(true);
+  const [loadingBlogs, setLoadingBlogs] = useState(!initialBlogs);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -102,7 +103,15 @@ export function PublicBlogBrowser({ mode, categorySlug, categoryLabel }: PublicB
     };
   }, [searchInput]);
 
+  const initialLoadDone = useState(() => !!initialBlogs)[0];
+
   useEffect(() => {
+    // skip the very first load if the server already sent initialBlogs
+    // and nothing interactive has changed yet
+    if (initialLoadDone && searchTerm === '' && (mode === 'category' || activeCategory === (categorySlug || 'all'))) {
+      return;
+    }
+
     let cancelled = false;
 
     async function loadBlogs() {
@@ -134,6 +143,7 @@ export function PublicBlogBrowser({ mode, categorySlug, categoryLabel }: PublicB
     return () => {
       cancelled = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory, categorySlug, mode, searchTerm]);
 
   const displayedCategories = categories.length ? categories : [];

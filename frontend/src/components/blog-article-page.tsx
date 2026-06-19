@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/auth-context';
@@ -132,8 +133,14 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
         <div className="overflow-hidden rounded-[32px] border border-rule bg-paper shadow-[0_20px_70px_rgba(27,40,69,0.08)]">
           <div className="aspect-[16/10] sm:aspect-[16/9] md:aspect-[16/8] bg-soft relative overflow-hidden">
             {blog.cover_image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={blog.cover_image_url} alt={blog.title} className="h-full w-full object-cover" />
+              <Image
+                src={blog.cover_image_url}
+                alt={blog.title}
+                fill
+                priority
+                sizes="(max-width: 896px) 100vw, 896px"
+                className="object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,rgba(184,96,64,0.9),rgba(90,122,110,0.84))]">
                 <span className="font-display text-4xl sm:text-6xl text-paper/90">Aperture</span>
@@ -162,10 +169,15 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
 
             <div className="mt-6 flex flex-col gap-4 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-rule bg-soft text-sm font-semibold text-ink">
+                <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-rule bg-soft text-sm font-semibold text-ink">
                   {blog.author?.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={blog.author.avatar_url} alt={blog.author.name} className="h-full w-full object-cover" />
+                    <Image
+                      src={blog.author.avatar_url}
+                      alt={blog.author.name}
+                      fill
+                      sizes="48px"
+                      className="object-cover"
+                    />
                   ) : (
                     blog.author?.name?.slice(0, 1).toUpperCase() || 'A'
                   )}

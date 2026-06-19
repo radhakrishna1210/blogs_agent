@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { PublicBlog } from '../lib/blog-types';
 
@@ -34,8 +35,13 @@ export function BlogCard({ blog }: BlogCardProps) {
     <article className="overflow-hidden rounded-[28px] border border-rule bg-paper shadow-[0_14px_45px_rgba(27,40,69,0.06)] transition hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(27,40,69,0.1)]">
       <div className="relative aspect-[16/10] overflow-hidden bg-soft">
         {blog.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={blog.cover_image_url} alt={blog.title} className="h-full w-full object-cover" />
+          <Image
+            src={blog.cover_image_url}
+            alt={blog.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            className="object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-end justify-between p-5" style={{ background: getGradient(blog) }}>
             <span className="rounded-full border border-white/30 bg-white/10 px-3 py-2 font-display text-lg tracking-[0.08em] text-white backdrop-blur-sm">
