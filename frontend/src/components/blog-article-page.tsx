@@ -163,15 +163,17 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
             <div className="mt-6 flex flex-col gap-4 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-rule bg-soft text-sm font-semibold text-ink">
-                  {blog.author?.avatar_url ? (
+                  {!blog.ai_generated && blog.author?.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={blog.author.avatar_url} alt={blog.author.name} className="h-full w-full object-cover" />
                   ) : (
-                    blog.author?.name?.slice(0, 1).toUpperCase() || 'A'
+                    <span className="font-display text-lg">A</span>
                   )}
                 </div>
                 <div>
-                  <p className="font-medium text-ink">{blog.author?.name || 'Aperture Editorial'}</p>
+                  <p className="font-medium text-ink">
+                    {blog.ai_generated ? 'Aperture Editorial' : (blog.author?.name || 'Aperture Editorial')}
+                  </p>
                   <p className="text-sm text-muted">Published in Aperture</p>
                 </div>
               </div>
