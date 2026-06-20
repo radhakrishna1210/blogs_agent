@@ -145,24 +145,24 @@ export function PublicBlogBrowser({ mode, categorySlug, categoryLabel }: PublicB
     : 'Browse all published Aperture articles, filter by category, and search by title as you type.';
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-      <div className="rounded-[32px] border border-rule bg-paper px-6 py-8 shadow-[0_20px_70px_rgba(27,40,69,0.08)] md:px-10">
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div className="rounded-[20px] border border-rule bg-paper px-4 py-6 shadow-[0_20px_70px_rgba(27,40,69,0.08)] sm:rounded-[32px] sm:px-6 sm:py-8 md:px-10">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent">
               {mode === 'category' ? 'Category archive' : 'Public blog listing'}
             </p>
-            <h1 className="mt-4 font-display text-4xl font-normal tracking-[-0.04em] md:text-6xl">
+            <h1 className="mt-3 font-display text-[26px] font-normal leading-[1.15] tracking-[-0.04em] sm:mt-4 sm:text-4xl md:text-6xl">
               {categoryTitle}
             </h1>
-            <p className="mt-4 max-w-3xl font-serif text-lg leading-8 text-muted">
+            <p className="mt-3 max-w-3xl font-serif text-[15px] leading-7 text-muted sm:mt-4 sm:text-lg sm:leading-8">
               {categoryDescription}
             </p>
           </div>
 
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-full border border-ink bg-ink px-6 py-3 text-sm font-medium text-paper transition hover:border-accent hover:bg-accent"
+            className="mt-2 inline-flex w-full items-center justify-center rounded-full border border-ink bg-ink px-6 py-3 text-sm font-medium text-paper transition hover:border-accent hover:bg-accent sm:mt-0 sm:w-auto"
           >
             Back home
           </Link>
@@ -209,13 +209,13 @@ export function PublicBlogBrowser({ mode, categorySlug, categoryLabel }: PublicB
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-rule bg-bg px-4 py-3 shadow-[0_10px_28px_rgba(27,40,69,0.04)]">
+            <div className="rounded-[16px] border border-rule bg-bg px-4 py-3 shadow-[0_10px_28px_rgba(27,40,69,0.04)] sm:rounded-[24px]">
               <input
                 type="search"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search by title..."
-                className="w-full bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
+                className="w-full bg-transparent font-serif text-base text-ink outline-none placeholder:text-muted sm:text-lg"
                 aria-label="Search blogs by title"
               />
             </div>

@@ -31,8 +31,8 @@ export function BlogCard({ blog }: BlogCardProps) {
   const categoryName = blog.category?.name || 'Uncategorized';
 
   return (
-    <article className="overflow-hidden rounded-[28px] border border-rule bg-paper shadow-[0_14px_45px_rgba(27,40,69,0.06)] transition hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(27,40,69,0.1)]">
-      <div className="relative aspect-[16/10] overflow-hidden bg-soft">
+    <article className="overflow-hidden rounded-[20px] border border-rule bg-paper shadow-[0_14px_45px_rgba(27,40,69,0.06)] transition hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(27,40,69,0.1)] sm:rounded-[28px]">
+      <div className="relative aspect-[16/9] overflow-hidden bg-soft sm:aspect-[16/10]">
         {blog.cover_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={blog.cover_image_url} alt={blog.title} className="h-full w-full object-cover" />
@@ -53,18 +53,18 @@ export function BlogCard({ blog }: BlogCardProps) {
         </div>
       </div>
 
-      <div className="space-y-4 p-6">
-        <h3 className="font-display text-3xl font-normal tracking-[-0.03em] text-ink">
+      <div className="space-y-3 p-4 sm:space-y-4 sm:p-6">
+        <h3 className="font-display text-xl font-normal tracking-[-0.03em] text-ink sm:text-3xl">
           {blog.title}
         </h3>
 
-        <p className="font-serif text-[15px] leading-7 text-muted">
+        <p className="font-serif text-[14px] leading-6 text-muted sm:text-[15px] sm:leading-7 line-clamp-3">
           {blog.summary || 'No summary available yet.'}
         </p>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4 text-sm text-muted">
-          <span>{authorName}</span>
-          <div className="flex items-center gap-4 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-3 text-sm text-muted sm:gap-3 sm:pt-4">
+          <span className="text-xs sm:text-sm">{authorName}</span>
+          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted sm:gap-4 sm:text-xs">
             <span>{blog.read_time || 1} min read</span>
             <span>{blog.likes_count} likes</span>
           </div>
