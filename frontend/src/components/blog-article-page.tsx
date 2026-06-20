@@ -129,7 +129,7 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
   return (
     <main className="min-h-screen bg-bg text-ink">
       <article className="mx-auto max-w-4xl px-4 py-6 sm:px-6 md:px-8 md:py-14">
-        <div className="overflow-hidden rounded-[32px] border border-rule bg-paper shadow-[0_20px_70px_rgba(27,40,69,0.08)]">
+        <div className="overflow-hidden rounded-[20px] border border-rule bg-paper shadow-[0_20px_70px_rgba(27,40,69,0.08)] sm:rounded-[32px]">
           <div className="aspect-[16/10] sm:aspect-[16/9] md:aspect-[16/8] bg-soft relative overflow-hidden">
             {blog.cover_image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -156,7 +156,7 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
               <span>{blog.read_time || 1} min read</span>
             </div>
 
-            <h1 className="mt-5 max-w-3xl font-display text-3xl sm:text-5xl md:text-7xl font-normal tracking-[-0.04em] text-ink leading-tight">
+            <h1 className="mt-4 max-w-3xl font-display text-[26px] font-normal leading-[1.15] tracking-[-0.04em] text-ink sm:mt-5 sm:text-5xl md:text-7xl md:leading-tight">
               {blog.title}
             </h1>
 
@@ -178,12 +178,12 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => void handleLike()}
                   disabled={likeLoading}
-                  className={`inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-5 sm:py-3 ${
                     liked
                       ? 'border-accent bg-accent text-paper'
                       : 'border-ink bg-ink text-paper hover:border-accent hover:bg-accent'
@@ -197,14 +197,14 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
                 <button
                   type="button"
                   onClick={() => void handleShare()}
-                  className="inline-flex items-center rounded-full border border-rule bg-paper px-5 py-3 text-sm font-medium text-ink transition hover:border-accent hover:bg-bg"
+                  className="inline-flex flex-1 items-center justify-center rounded-full border border-rule bg-paper px-4 py-2.5 text-sm font-medium text-ink transition hover:border-accent hover:bg-bg sm:flex-none sm:px-5 sm:py-3"
                 >
                   Share
                 </button>
               </div>
             </div>
 
-            <div className="mt-8 rounded-[20px] sm:rounded-[28px] border border-rule bg-bg p-4 sm:p-6 md:p-8">
+            <div className="mt-6 rounded-[16px] border border-rule bg-bg p-4 sm:mt-8 sm:rounded-[20px] sm:p-6 md:rounded-[28px] md:p-8">
               <div
                 className="prose prose-slate max-w-none prose-headings:font-display prose-headings:font-normal prose-headings:tracking-[-0.03em] prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:font-serif prose-p:text-[16px] sm:prose-p:text-[17px] prose-p:leading-8 prose-li:font-serif prose-li:text-[16px] sm:prose-li:text-[17px] prose-a:text-accent prose-img:rounded-[20px] prose-blockquote:border-accent prose-blockquote:font-serif prose-blockquote:not-italic"
                 dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
@@ -213,11 +213,11 @@ export function BlogArticlePage({ blog, relatedBlogs }: BlogArticlePageProps) {
           </div>
         </div>
 
-        <section className="mt-10">
-          <div className="mb-6 flex items-end justify-between gap-4 border-b border-rule pb-4">
+        <section className="mt-8 sm:mt-10">
+          <div className="mb-4 flex flex-col gap-2 border-b border-rule pb-3 sm:mb-6 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:pb-4">
             <div>
               <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent">Related</p>
-              <h2 className="mt-2 font-display text-3xl font-normal tracking-[-0.03em]">More from this category</h2>
+              <h2 className="mt-1.5 font-display text-2xl font-normal tracking-[-0.03em] sm:mt-2 sm:text-3xl">More from this category</h2>
             </div>
             {blog.category ? (
               <Link href={`/category/${blog.category.slug}`} className="text-sm font-medium text-accent transition hover:text-ink">
