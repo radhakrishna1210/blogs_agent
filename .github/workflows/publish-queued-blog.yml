@@ -45,6 +45,7 @@ jobs:
           echo "✅ Published: $TITLE (slug: $SLUG)"
 
       - name: Delete queued-blog.json
+        if: always()
         run: |
           if [ ! -f queued-blog.json ]; then
             exit 0
