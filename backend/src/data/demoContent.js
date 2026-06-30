@@ -37,8 +37,9 @@ export const demoBlogs = topics.map((topic, index) => ({
   ai_generated: true,
   read_time: 3,
   likes_count: 0,
-  created_at: '2026-05-30T00:00:00.000Z',
-  updated_at: '2026-05-30T00:00:00.000Z',
+  // Descending timestamps so newest (highest index) appears first after sort
+  created_at: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(),
+  updated_at: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(),
 }));
 
 export function isSchemaMissingError(error) {
@@ -58,7 +59,7 @@ export function getDemoBlogBySlug(slug) {
 }
 
 export function listDemoBlogs() {
-  return [...demoBlogs];
+  return [...demoBlogs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
 export function addDemoBlog(blog) {

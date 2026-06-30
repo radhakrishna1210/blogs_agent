@@ -14,17 +14,9 @@ export function Navbar({ topics }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-20 border-b border-rule/90 bg-bg/90 backdrop-blur-xl">
-      {/* Top utility bar */}
-      <div className="border-b border-rule/70 px-4 py-2 text-[11px] tracking-[0.08em] text-muted sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <span>Vol. II · Aperture editorial system</span>
-          <span className="hidden md:inline">Warm palette · React design · ready for backend wiring</span>
-        </div>
-      </div>
-
       {/* Main navbar row */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4 py-3 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6 lg:py-5">
+        <div className="flex items-center justify-between gap-4 py-3 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6 lg:py-4">
           {/* Logo */}
           <div className="flex lg:justify-start">
             <Link href="/" className="inline-flex items-center gap-2.5">

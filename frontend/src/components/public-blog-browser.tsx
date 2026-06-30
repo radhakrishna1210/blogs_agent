@@ -168,57 +168,99 @@ export function PublicBlogBrowser({ mode, categorySlug, categoryLabel }: PublicB
           </Link>
         </div>
 
+        {/* Category pills + inline search bar on the same row */}
         {mode === 'all' ? (
-          <div className="mt-8 space-y-4">
-            <div className="overflow-x-auto pb-2">
-              <div className="flex min-w-max items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setActiveCategory('all')}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                    activeCategory === 'all'
-                      ? 'border-accent bg-accent text-paper shadow-[0_10px_24px_rgba(184,96,64,0.18)]'
-                      : 'border-rule bg-bg text-ink hover:border-accent hover:bg-paper'
-                  }`}
-                >
-                  All categories
-                </button>
+          <div className="mt-8">
+            <div className="flex items-center gap-3">
+              {/* Scrollable category pills — takes remaining space */}
+              <div className="min-w-0 flex-1 overflow-x-auto pb-1">
+                <div className="flex min-w-max items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategory('all')}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                      activeCategory === 'all'
+                        ? 'border-accent bg-accent text-paper shadow-[0_6px_16px_rgba(184,96,64,0.2)]'
+                        : 'border-rule bg-bg text-ink hover:border-accent hover:bg-paper'
+                    }`}
+                  >
+                    All
+                  </button>
 
-                {loadingCategories ? (
-                  <span className="rounded-full border border-rule bg-bg px-4 py-2 text-sm text-muted">Loading categories...</span>
-                ) : (
-                  displayedCategories.map((item) => {
-                    const active = activeCategory === item.slug;
+                  {loadingCategories ? (
+                    <span className="rounded-full border border-rule bg-bg px-3 py-1.5 text-xs text-muted">
+                      Loading…
+                    </span>
+                  ) : (
+                    displayedCategories.map((item) => {
+                      const active = activeCategory === item.slug;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setActiveCategory(item.slug)}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition whitespace-nowrap ${
+                            active
+                              ? 'border-accent bg-accent text-paper shadow-[0_6px_16px_rgba(184,96,64,0.2)]'
+                              : 'border-rule bg-bg text-ink hover:border-accent hover:bg-paper'
+                          }`}
+                        >
+                          {item.name}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
 
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setActiveCategory(item.slug)}
-                        className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                          active
-                            ? 'border-accent bg-accent text-paper shadow-[0_10px_24px_rgba(184,96,64,0.18)]'
-                            : 'border-rule bg-bg text-ink hover:border-accent hover:bg-paper'
-                        }`}
-                      >
-                        {item.name}
-                      </button>
-                    );
-                  })
-                )}
+              {/* Compact inline search bar — fixed width on right */}
+              <div className="flex-shrink-0">
+                <div className="flex items-center gap-2 rounded-full border border-rule bg-bg px-3 py-1.5 shadow-[0_4px_12px_rgba(27,40,69,0.04)] transition focus-within:border-accent focus-within:shadow-[0_4px_16px_rgba(184,96,64,0.12)]">
+                  {/* Search icon */}
+                  <svg
+                    className="h-3.5 w-3.5 flex-shrink-0 text-muted"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="search"
+                    id="blog-search"
+                    value={searchInput}
+                    onChange={(event) => setSearchInput(event.target.value)}
+                    placeholder="Search…"
+                    className="w-32 bg-transparent font-serif text-xs text-ink outline-none placeholder:text-muted sm:w-40"
+                    aria-label="Search blogs by title"
+                  />
+                  {searchInput && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchInput('')}
+                      className="flex-shrink-0 text-muted transition hover:text-ink"
+                      aria-label="Clear search"
+                    >
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="rounded-[16px] border border-rule bg-bg px-4 py-3 shadow-[0_10px_28px_rgba(27,40,69,0.04)] sm:rounded-[24px]">
-              <input
-                type="search"
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder="Search by title..."
-                className="w-full bg-transparent font-serif text-base text-ink outline-none placeholder:text-muted sm:text-lg"
-                aria-label="Search blogs by title"
-              />
-            </div>
+            {/* Active category label */}
+            {activeCategory !== 'all' && (
+              <p className="mt-3 font-sans text-xs text-muted">
+                Showing: <span className="font-semibold text-accent">
+                  {displayedCategories.find((c) => c.slug === activeCategory)?.name || activeCategory}
+                </span>
+                {searchTerm && <> · Search: "<span className="font-semibold text-ink">{searchTerm}</span>"</>}
+              </p>
+            )}
           </div>
         ) : null}
       </div>
