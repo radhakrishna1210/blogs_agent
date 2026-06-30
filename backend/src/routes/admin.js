@@ -10,6 +10,40 @@ import { createHttpError } from '../utils/httpError.js';
 
 export const adminRouter = Router();
 
+// ---------------------------------------------------------------------------
+// In-memory settings state (survives process lifetime, resets on server restart)
+// Supabase `settings` table is used when available; this is the fallback.
+// ---------------------------------------------------------------------------
+let inMemoryAutoPosting = true; // default ON
+
+async function getAutoPostingSetting() {
+  try {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'auto_posting_enabled')
+      .maybeSingle();
+    if (error || !data) return inMemoryAutoPosting;
+    return data.value === 'true' || data.value === true;
+  } catch {
+    return inMemoryAutoPosting;
+  }
+}
+
+async function setAutoPostingSetting(enabled) {
+  inMemoryAutoPosting = enabled;
+  try {
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'auto_posting_enabled', value: String(enabled) }, { onConflict: 'key' });
+    if (error) {
+      console.warn('[settings] Supabase upsert failed, using in-memory fallback:', error.message);
+    }
+  } catch (err) {
+    console.warn('[settings] Settings table not available, using in-memory fallback:', err.message);
+  }
+}
+
 const blogSelectFields = 'id, title, slug, category, cover_image_url, summary, content, author_id, status, ai_generated, read_time, likes_count, created_at, updated_at';
 
 async function hydrateBlogs(blogs) {
@@ -322,11 +356,43 @@ function getReadTimeMinutes(content) {
   return Math.max(1, Math.ceil(wordCount / 200));
 }
 
+// ---------------------------------------------------------------------------
+// GET /api/admin/settings — read admin settings (auth required)
+// PATCH /api/admin/settings — update admin settings (admin required)
+// ---------------------------------------------------------------------------
+adminRouter.get('/settings', authenticateRequest, requireAuth, requireAdmin, async (_req, res, next) => {
+  try {
+    const autoPosting = await getAutoPostingSetting();
+    return res.json({ ok: true, auto_posting_enabled: autoPosting });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+adminRouter.patch('/settings', authenticateRequest, requireAuth, requireAdmin, async (req, res, next) => {
+  try {
+    const { auto_posting_enabled } = req.body || {};
+    if (typeof auto_posting_enabled !== 'boolean') {
+      return next(createHttpError(400, 'auto_posting_enabled must be a boolean.', 'VALIDATION_ERROR'));
+    }
+    await setAutoPostingSetting(auto_posting_enabled);
+    return res.json({ ok: true, auto_posting_enabled });
+  } catch (error) {
+    return next(error);
+  }
+});
+
 adminRouter.post('/auto-publish', async (req, res, next) => {
   try {
     const incomingSecret = req.headers['x-cron-secret'];
     if (!env.cronSecret || incomingSecret !== env.cronSecret) {
       return next(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
+    }
+
+    // Check toggle — if auto-posting is disabled, reject gracefully
+    const autoPostingEnabled = await getAutoPostingSetting();
+    if (!autoPostingEnabled) {
+      return res.status(200).json({ ok: false, skipped: true, reason: 'Auto-posting is currently disabled by admin.' });
     }
 
     const {

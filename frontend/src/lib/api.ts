@@ -40,7 +40,7 @@ function getErrorMessage(parsed: unknown, responseStatus: number) {
   return `Request failed with status ${responseStatus}`;
 }
 
-export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}, fetchOptions: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers || {});
 
   if (options.token) {
@@ -57,6 +57,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     method: options.method || (options.body !== undefined ? 'POST' : 'GET'),
     headers,
     body,
+    ...fetchOptions,
   });
 
   const parsed = parseResponseText(await response.text());
@@ -71,3 +72,4 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
 
   return parsed as T;
 }
+
