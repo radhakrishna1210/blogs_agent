@@ -4,8 +4,10 @@ import { topics } from '../../lib/topics';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Aperture',
+  title: 'Privacy Policy',
   description: 'Privacy Policy for Aperture — how we collect, use, and protect your information.',
+  alternates: { canonical: 'https://blogs.mannmate.com/privacy-policy' },
+  openGraph: { url: 'https://blogs.mannmate.com/privacy-policy' },
 };
 
 export default function PrivacyPolicyPage() {

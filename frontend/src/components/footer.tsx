@@ -25,8 +25,8 @@ export function Footer() {
             ))}
             <span className="text-rule">·</span>
             <Link href="/blogs" className="hover:text-accent transition">All Articles</Link>
+            <Link href="/about" className="hover:text-accent transition">About</Link>
             <Link href="/contact" className="hover:text-accent transition">Contact</Link>
-            <Link href="/admin" className="hover:text-accent transition">Admin</Link>
             <Link href="/privacy-policy" className="hover:text-accent transition">Privacy</Link>
           </nav>
         </div>

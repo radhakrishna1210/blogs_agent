@@ -4,8 +4,10 @@ import { topics } from '../../lib/topics';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact — Aperture',
+  title: 'Contact',
   description: "Get in touch with the Aperture team. We'd love to hear from you.",
+  alternates: { canonical: 'https://blogs.mannmate.com/contact' },
+  openGraph: { url: 'https://blogs.mannmate.com/contact' },
 };
 
 export default function ContactPage() {
